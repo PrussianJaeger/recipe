@@ -9,7 +9,7 @@ body {
 	height: 100%;
 	display: flex;
 	justify-content: center;
-	font-family: 'Merriweather', sans-serif;
+	font-family: 'Merriweather', serif;
 }
 
 .root {
@@ -21,6 +21,8 @@ body {
 }
 
 header {
+	display: flex;
+	padding-left: 1rem;
 	border-bottom: 1px solid gray;
 }
 
