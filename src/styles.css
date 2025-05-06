@@ -12,6 +12,14 @@ body {
 	font-family: 'Merriweather', serif;
 }
 
+.dark-mode {
+	background-color: #353532;
+	color: white;
+}
+.dark-mode .root {
+	background-color: #53534e;
+}
+
 .root {
 	background-color: white;
 	width: 50%;
@@ -22,38 +30,35 @@ body {
 
 header {
 	display: flex;
+	justify-content: space-between;
+	align-items: center;
 	padding-left: 1rem;
+	padding-right: 1rem;
 	border-bottom: 1px solid gray;
 }
 
 .actions {
-	margin: 8px;
-	display: grid;
-	grid-template-rows: 1fr;
-	grid-template-columns: 1fr 6fr 1fr;
-}
-
-.right {
+	margin: .5rem;
 	display: flex;
-	justify-content: right;
+	justify-content: space-between;
 }
 
-button {
-	height: 40px;
-	width: 120px;
+.actions button {
+	height: 2.5rem;
+	width: 7.5rem;
 }
 
 .content {
 	width: 100%;
 	display: flex;
-	gap: 16px;
+	gap: 1rem;
 	flex-wrap: wrap;
 	justify-content: space-evenly;
 }
 
 .box {
-	width: 250px;
-	height: 125px;
+	width: 15rem;
+	height: 7.5rem;
 	display: grid;
 	grid-template-rows: 3fr 1fr;
 	grid-template-columns: 1fr;
