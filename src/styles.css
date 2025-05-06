@@ -19,6 +19,9 @@ body {
 .dark-mode .root {
 	background-color: #53534e;
 }
+.dark-mode .box {
+	border-color: white;
+}
 
 .root {
 	background-color: white;
