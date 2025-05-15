@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-  
-  applyDarkMode();
+
+	applyDarkMode();
 
 	const darkModeBtn = document.getElementById("darkModeButton");
 	if (darkModeBtn) {
@@ -27,126 +27,85 @@ document.addEventListener('DOMContentLoaded', () => {
   
 // Add Page ========================================================================================================================
 	if (window.location.pathname.endsWith("addRecipe.html")) {
-	const form = document.getElementById("add");
-	const ingredientsContainer = document.getElementById("ingredients");
-	const addIngredientBtn = document.getElementById("addIngredient");
-	const statusMessage = document.getElementById("statusMessage");
+		const form = document.getElementById("add");
+		const ingredientsContainer = document.getElementById("ingredients");
+		const addIngredientBtn = document.getElementById("addIngredient");
+		const statusMessage = document.getElementById("statusMessage");
 
-	addIngredientBtn.addEventListener("click", () => {
-		const div = document.createElement("div");
-		div.classList.add("ingredient");
+		addIngredientBtn.addEventListener("click", () => {
+			const div = document.createElement("div");
+			div.classList.add("ingredient");
 
-		div.innerHTML = `
-			<input type="text" placeholder="Ingredient name" class="ingredient-name" required>
-			<input type="text" placeholder="Amount" class="ingredient-amount" required>
-		`;
+			div.innerHTML = `
+				<input type="text" placeholder="Ingredient name" class="ingredient-name" required>
+				<input type="text" placeholder="Amount" class="ingredient-amount" required>
+			`;
 
-		ingredientsContainer.appendChild(div);
-	});
+			ingredientsContainer.appendChild(div);
+		});
 
-	form.addEventListener("submit", async (e) => {
-		e.preventDefault();
+		form.addEventListener("submit", async (e) => {
+			e.preventDefault();
 
-		const recipeID = crypto.randomUUID();
-		const name = document.getElementById("name").value.trim();
-		const description = document.getElementById("description").value.trim();
-		const instructions = document.getElementById("instructions").value.trim();
+			const recipeID = crypto.randomUUID();
+			const name = document.getElementById("name").value.trim();
+			const description = document.getElementById("description").value.trim();
+			const instructions = document.getElementById("instructions").value.trim();
 
-		const ingredientElements = ingredientsContainer.querySelectorAll(".ingredient");
-		const ingredients = Array.from(ingredientElements).map(div => ({
-			name: div.querySelector(".ingredient-name").value.trim(),
-			amount: div.querySelector(".ingredient-amount").value.trim()
-		}));
+			const ingredientElements = ingredientsContainer.querySelectorAll(".ingredient");
+			const ingredients = Array.from(ingredientElements).map(div => ({
+				name: div.querySelector(".ingredient-name").value.trim(),
+				amount: div.querySelector(".ingredient-amount").value.trim()
+			}));
 
-		const payload = {
-			recipeID,
-			name,
-			description,
-			instructions,
-			ingredients
-		};
+			const payload = {
+				recipeID,
+				name,
+				description,
+				instructions,
+				ingredients
+			};
 
-		try {
-			const response = await fetch("https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/upload_data", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify(payload)
-			});
+			try {
+				const response = await fetch("https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/upload_data", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(payload)
+				});
 
-			const result = await response.json();
-			statusMessage.textContent = response.ok ? "Recipe added successfully!" : `Error: ${result.error}`;
-			statusMessage.style.color = response.ok ? "green" : "red";
-		} catch (err) {
-			console.error(err);
-			statusMessage.textContent = "Error submitting recipe.";
-			statusMessage.style.color = "red";
+				const result = await response.json();
+				statusMessage.textContent = response.ok ? "Recipe added successfully!" : `Error: ${result.error}`;
+				statusMessage.style.color = response.ok ? "green" : "red";
+			} catch (err) {
+				console.error(err);
+				statusMessage.textContent = "Error submitting recipe.";
+				statusMessage.style.color = "red";
+			}
+		});
+
+
+	// Remove Page ========================================================================================================================
+		if (document.querySelector("title").textContent == "Remove | Recipe App") {
+			const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_all_data";
+			fetch(endpoint)
+				.then(response => {
+					if (!response.ok) throw new Error("Network response was not ok");
+					return response.json();
+				})
+				.then(data => {
+					populateSelect(data);
+				})
+				.catch(error => {
+					console.error("Error fetching recipes:", error);
+				});
 		}
-	});
-}
-
-async function fetchRecipeImages(recipeID) {
-  try {
-    const response = await fetch(
-      "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/image/get_image",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ recipeID }),
-      }
-    );
-
-    if (!response.ok) throw new Error("Failed to fetch images");
-
-    const data = await response.json();
-    return data.image_urls || [];
-  } catch (err) {
-    console.error(`Error fetching images for recipe ${recipeID}:`, err);
-    return [];
-  }
-}
-
-async function loadAndShowRecipes() {
-  const endpoint =
-    "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_title_cards";
-
-  try {
-    const res = await fetch(endpoint);
-    if (!res.ok) throw new Error("Failed to fetch recipes");
-    const recipes = await res.json();
-
-    
-    for (const recipe of recipes) {
-      const images = await fetchRecipeImages(recipe.recipeID);
-      recipe.img = images.length > 0 ? images[0] : "assets/default-image.jpg";
-    }
-
-    showRecipes(recipes);
-  } catch (err) {
-    console.error("Error loading recipes:", err);
-  }
-  
-  
-// Remove Page ========================================================================================================================
-	if (document.querySelector("title").textContent == "Remove | Recipe App") {
-		const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_all_data";
-		fetch(endpoint)
-			.then(response => {
-				if (!response.ok) throw new Error("Network response was not ok");
-				return response.json();
-			})
-			.then(data => {
-				populateSelect(data);
-			})
-			.catch(error => {
-				console.error("Error fetching recipes:", error);
-			});
 	}
 
-  
+
 // Search Page ========================================================================================================================
-	if (document.querySelector("title").textContent == "Search | Recipe App") {
+	document.querySelector("title").textContent == "Search | Recipe App") {
 		const searchBtn = document.getElementById("searchSubmit");
 		const searchInput = document.getElementById("searchInput");
 		const resultsContainer = document.getElementById("searchResults");
@@ -169,7 +128,6 @@ async function loadAndShowRecipes() {
 				});
 		});
 	}
-
 });
 
 
@@ -210,7 +168,7 @@ function showRecipes(recipes, container = document.querySelector(".content")) {
 
 		const name = recipe.name || "Unnamed Recipe";
 		container.insertAdjacentHTML("beforeend", template(img, name));
-	};
+	});
 }
 
 function option(name, recipeId) {
@@ -228,5 +186,46 @@ function populateSelect(recipes, container = document.querySelector("#remove-rec
 		const recipeId = recipe.recipeID;
 		container.insertAdjacentHTML("beforeend", option(name, recipeId));
 	});
+}
 
+async function fetchRecipeImages(recipeID) {
+	try {
+		const response = await fetch(
+			"https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/image/get_image",
+			{
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ recipeID }),
+			}
+		);
+
+		if (!response.ok) throw new Error("Failed to fetch images");
+
+		const data = await response.json();
+		return data.image_urls || [];
+	} catch (err) {
+		console.error(`Error fetching images for recipe ${recipeID}:`, err);
+		return [];
+	}
+}
+
+async function loadAndShowRecipes() {
+	const endpoint =
+		"https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_title_cards";
+
+	try {
+		const res = await fetch(endpoint);
+		if (!res.ok) throw new Error("Failed to fetch recipes");
+		const recipes = await res.json();
+
+
+		for (const recipe of recipes) {
+			const images = await fetchRecipeImages(recipe.recipeID);
+			recipe.img = images.length > 0 ? images[0] : "assets/default-image.jpg";
+		}
+
+		showRecipes(recipes);
+	} catch (err) {
+		console.error("Error loading recipes:", err);
+	}
 }
