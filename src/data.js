@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
 
 	applyDarkMode();
 
@@ -6,14 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (darkModeBtn) {
 		darkModeBtn.addEventListener("click", darkMode);
 	}
-  
 
 // Home Page ========================================================================================================================
 	if (document.querySelector("title").textContent == "Home | Recipe App") {
 
 		loadAndShowRecipes();
 
-		/*      // for some reason this is much faster, but we'll go with the one above anyway
+		/*      // for some reason the below is much faster, but we'll go with the one above anyway
 
 		const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_all_data";
 		fetch(endpoint)
@@ -149,8 +148,9 @@ function darkMode() {
 
 function applyDarkMode() {
 	const isDark = localStorage.getItem("darkModeState") === "1";
+	const body = document.querySelector("body");
 	if (isDark) {
-		document.body.classList.add("dark-mode");
+		body.classList.add("dark-mode");
 	}
 }
 
