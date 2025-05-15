@@ -46,7 +46,7 @@ header {
 	justify-content: space-between;
 }
 
-.actions button {
+.actions button, .actions a {
 	height: 2.5rem;
 	width: 7.5rem;
 }
