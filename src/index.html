@@ -19,7 +19,7 @@
 
 	<main>
 		<div class="actions">
-			<button id="search" onClick="">Search</button>
+			<button id="search" onclick="window.location.href='search.html'">Search</button>
 			<button id="addRemovePage" onClick="window.location.href='addRecipe.html'">Add / Remove</button>
 		</div>
 
@@ -30,4 +30,20 @@
 
 </section>
 </body>
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+	const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1";
+	fetch(endpoint)
+		.then(response => {
+			if (!response.ok) throw new Error("Network response was not ok");
+			return response.json();
+		})
+		.then(data => {
+			showRecipes(data);
+		})
+		.catch(error => {
+			console.error("Error fetching recipes:", error);
+		});
+	});
+</script>
 </html>
