@@ -10,6 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Home Page ========================================================================================================================
 	if (document.querySelector("title").textContent == "Home | Recipe App") {
+
+		loadAndShowRecipes();
+
+		/*      // for some reason this is much faster, but we'll go with the one above anyway
+
 		const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_all_data";
 		fetch(endpoint)
 			.then(response => {
@@ -21,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			})
 			.catch(error => {
 				console.error("Error fetching recipes:", error);
-			});
+			}); */
 	}
 
   
@@ -84,50 +89,53 @@ document.addEventListener('DOMContentLoaded', () => {
 				statusMessage.style.color = "red";
 			}
 		});
+	}
 
 
-	// Remove Page ========================================================================================================================
-		if (document.querySelector("title").textContent == "Remove | Recipe App") {
-			const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_all_data";
-			fetch(endpoint)
-				.then(response => {
-					if (!response.ok) throw new Error("Network response was not ok");
-					return response.json();
-				})
-				.then(data => {
-					populateSelect(data);
-				})
-				.catch(error => {
-					console.error("Error fetching recipes:", error);
-				});
-		}
+// Remove Page ========================================================================================================================
+	if (document.querySelector("title").textContent == "Remove | Recipe App") {
+		const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_all_data";
+		fetch(endpoint)
+			.then(response => {
+				if (!response.ok) throw new Error("Network response was not ok");
+				return response.json();
+			})
+			.then(data => {
+				populateSelect(data);
+			})
+			.catch(error => {
+				console.error("Error fetching recipes:", error);
+			});
 	}
 
 
 // Search Page ========================================================================================================================
 	if (document.querySelector("title").textContent == "Search | Recipe App") {
+		const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_title_cards";
 		const searchBtn = document.getElementById("searchSubmit");
 		const searchInput = document.getElementById("searchInput");
 		const resultsContainer = document.getElementById("searchResults");
 
-		searchBtn.addEventListener("click", () => {
+		searchBtn.addEventListener("click", async () => {
 			const query = searchInput.value.trim().toLowerCase();
-
 			if (!query) return;
 
-			fetch("https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1")
-				.then(res => res.json())
-				.then(data => {
-					const filtered = data.filter(recipe =>
-						recipe.name && recipe.name.toLowerCase().includes(query)
-					);
-					showRecipes(filtered, resultsContainer);
-				})
-				.catch(err => {
-					console.error("Search failed:", err);
-				});
+			try {
+				const response = await fetch(endpoint);
+				if (!response.ok) throw new Error(`API error: ${response.status}`);
+
+				const data = await response.json();
+				const filtered = data.filter(recipe =>
+					recipe.name && recipe.name.toLowerCase().includes(query)
+				);
+
+				showRecipes(filtered, resultsContainer);
+			} catch (err) {
+				console.error("Search failed:", err);
+			}
 		});
 	}
+
 });
 
 
