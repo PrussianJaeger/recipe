@@ -1,3 +1,6 @@
+const API_BASE = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1";
+const S3_BASE = "https://recipe-picture-bucket.s3.us-east-1.amazonaws.com";
+
 document.addEventListener('DOMContentLoaded', () => {
 
 	applyDarkMode();
@@ -32,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
   
 // Add Page ========================================================================================================================
 	if (window.location.pathname.endsWith("addRecipe.html")) {
+
+	///*
 		const form = document.getElementById("add");
 		const ingredientsContainer = document.getElementById("ingredients");
 		const addIngredientBtn = document.getElementById("addIngredient");
@@ -89,6 +94,70 @@ document.addEventListener('DOMContentLoaded', () => {
 				statusMessage.style.color = "red";
 			}
 		});
+	//*/
+	/*
+		document.getElementById("recipeForm").addEventListener("submit", async function (e) {
+			e.preventDefault();
+
+			const recipeID = crypto.randomUUID();
+			const name = document.getElementById("name").value;
+			const description = document.getElementById("description").value;
+			const instructions = document.getElementById("instructions").value;
+			const imageFile = document.getElementById("imageInput").files[0];
+
+			console.log("Uploading image:", imageFile.name); // ✅ Debug
+
+			const recipeData = {
+				recipeID,
+			    name,
+			    description,
+			    instructions,
+			    ingredients: []
+			};
+
+		    try {
+		        const uploadRes = await fetch(`${API_BASE}/data/upload_data`, {
+		            method: "POST",
+				    headers: { "Content-Type": "application/json" },
+				    body: JSON.stringify(recipeData)
+				});
+
+		        if (!uploadRes.ok) throw new Error("Failed to upload recipe data");
+
+		        const imageRes = await fetch(`${API_BASE}/image/upload_image`, {
+		            method: "POST",
+		            headers: { "Content-Type": "application/json" },
+		            body: JSON.stringify({ recipeID, filename: imageFile.name })
+		        });
+
+		        if (!imageRes.ok) throw new Error("Failed to get presigned image URL");
+
+		        const { upload_url } = await imageRes.json();
+
+		        const uploadImageRes = await fetch(upload_url, {
+		            method: "PUT",
+		            headers: {
+						"Content-Type": imageFile.type || "image/jpeg"
+		            },
+		            body: imageFile
+		        });
+
+			    if (!uploadImageRes.ok) {
+					const errorText = await uploadImageRes.text();
+					console.error("Upload failed response:", errorText);
+					throw new Error("Image upload failed");
+			    }
+
+			    alert("Recipe submitted!");
+			    document.getElementById("recipeForm").reset();
+			    loadRecipes();
+			} catch (err) {
+			    console.error("Error submitting recipe:", err);
+			    alert("Something went wrong. Check console for details.");
+		    }
+		});
+	*/
+
 	}
 
 
@@ -172,7 +241,15 @@ function showRecipes(recipes, container = document.querySelector(".content")) {
 		recipe = JSON.parse(recipe);
 
 // ============> TODO: GET IMAGES WORKING <=================================================================================================
-		const img = recipe.img || "assets/default-image.jpg";
+		// const img = recipe.img || "assets/default-image.jpg";
+
+		// 🔁 Fallback to local placeholder if image fails to load
+		const img = isValidKey ? `${S3_BASE}/${s3Key}` : "https://via.placeholder.com/150";
+		img.onerror = () => {
+			img.onerror = null;
+			img.src = "placeholder.jpg";  // or use "assets/placeholder.jpg" if it's in a folder
+		};
+// =========================================================================================================================================
 
 		const name = recipe.name || "Unnamed Recipe";
 		container.insertAdjacentHTML("beforeend", template(img, name));
