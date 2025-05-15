@@ -6,10 +6,20 @@ html {
 
 body {
 	background-color: lightgrey;
-	height: 100%;
+	min-height: 100%;
 	display: flex;
 	justify-content: center;
 	font-family: 'Merriweather', serif;
+}
+
+.root {
+	display: flex;
+	flex-direction: column;
+	background-color: white;
+	width: 50%;
+	min-height: 100%;
+	border-left: 2px solid darkgray;
+	border-right: 2px solid darkgray;
 }
 
 .dark-mode {
@@ -21,14 +31,6 @@ body {
 }
 .dark-mode .box {
 	border-color: white;
-}
-
-.root {
-	background-color: white;
-	width: 50%;
-	height: 100%;
-	border-left: 2px solid darkgray;
-	border-right: 2px solid darkgray;
 }
 
 header {
