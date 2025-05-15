@@ -3,13 +3,13 @@ const BUCKET_NAME = "recipe-picture-bucket";
 
 
 document.addEventListener('DOMContentLoaded', () => {
-
 	applyDarkMode();
 
 	const darkModeBtn = document.getElementById("darkModeButton");
 	if (darkModeBtn) {
 		darkModeBtn.addEventListener("click", darkMode);
 	}
+
   
 
 // Home Page ========================================================================================================================
@@ -145,10 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function darkMode() {
 	const isDark = localStorage.getItem("darkModeState") === "1";
-	const body = document.querySelector("body");
-
 	localStorage.setItem("darkModeState", isDark ? "0" : "1");
-	body.classList.toggle("dark-mode", !isDark);
+	document.body.classList.toggle("dark-mode", !isDark);
 }
 
 function applyDarkMode() {
