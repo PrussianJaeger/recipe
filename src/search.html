@@ -12,19 +12,23 @@
 
 	<header>
 		<h1>Search Recipes</h1>
-		<button onclick="window.location.href='index.html'">Back</button>
+		<button id="darkModeButton" onclick="darkMode()">
+			<img src="assets/dark-theme.svg" alt="Dark Mode"/>
+		</button>
 	</header>
 
 	<main>
 		<div class="actions">
+			<button id="homePage" onClick="window.location.href='index.html'">< Back</button>
 			<input type="text" id="searchInput" placeholder="Search by name..." />
 			<button id="searchSubmit">Search</button>
 		</div>
+
 		<section class="content" id="searchResults">
 			<!-- results go here -->
 		</section>
 	</main>
-
+	
 </section>
 </body>
 </html>

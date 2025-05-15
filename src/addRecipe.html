@@ -14,7 +14,6 @@
 		<h1>Recipe Search Engine</h1>
 		<button id="darkModeButton" onclick="darkMode()">
 			<img src="assets/dark-theme.svg" alt="Dark Mode"/>
-			<button onclick="window.location.href='index.html'">Back</button>
 		</button>
 	</header>
 
@@ -23,18 +22,35 @@
 			<button id="homePage" onClick="window.location.href='index.html'">< Back</button>
 		</div>
 
-
 		<section class="content">
-			<form id="add">
+			<form id="recipeForm">
 				<fieldset>
+					<legend>Add a Recipe</legend>
 
+					<label for="name">Recipe Name:</label>
+					<input type="text" id="name" required>
+
+					<label for="description">Description:</label>
+					<textarea id="description" rows="2"></textarea>
+
+					<label for="instructions">Instructions:</label>
+					<textarea id="instructions" rows="4"></textarea>
+
+					<div id="ingredients">
+					<h3>Ingredients</h3>
+					
+					</div>
+					<button type="button" id="addIngredient">+ Add Ingredient</button>
+
+					<label for="imageInput">Image:</label>
+					<input type="file" id="imageInput" accept="image/*"/>
+
+					<button type="submit">Submit Recipe</button>
+					<p id="statusMessage"></p>
 				</fieldset>
 			</form>
 		</section>
 	</main>
-
-
-
 
 </section>
 </body>
