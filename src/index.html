@@ -5,7 +5,7 @@
 	<link rel="stylesheet" href="reset.css" />
 	<link rel="stylesheet" href="styles.css" />
 	<script src="data.js" type="text/JavaScript"></script>
-	<title>Recipe App</title>
+	<title>Home | Recipe App</title>
 </head>
 <body>
 <section class="root">
@@ -19,11 +19,12 @@
 
 	<main>
 		<div class="actions">
-			<button id="search" onclick="window.location.href='search.html'">Search</button>
-			<button id="addRemovePage" onClick="window.location.href='addRecipe.html'">Add / Remove</button>
+			<button id="search" onClick="window.location.href='search.html'">Search</button>
+			<button id="addPage" onClick="window.location.href='addRecipe.html'">Add</button>
+			<button id="removePage" onClick="window.location.href='removeRecipe.html'">Remove</button>
 		</div>
 
-		<section class="content">
+		<section id="recipes" class="content">
 			<!-- recipes go here -->
 		</section>
 	</main>

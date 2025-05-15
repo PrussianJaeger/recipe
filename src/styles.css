@@ -46,9 +46,10 @@ header {
 	justify-content: space-between;
 }
 
-.actions button, .actions a {
+.actions button{
 	height: 2.5rem;
 	width: 7.5rem;
+	font: inherit;
 }
 
 .content {

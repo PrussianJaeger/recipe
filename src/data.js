@@ -1,3 +1,22 @@
+document.addEventListener('DOMContentLoaded', () => {
+
+
+	if (document.querySelector("title").textContent == "Home | Recipe App") {
+		showRecipes(recipes);  // add lambda connection
+	}
+
+	if (document.querySelector("title").textContent == "Add | Recipe App") {
+		document.querySelector("#add").addEventListener('click', (event) => {
+
+		});
+	}
+
+	if (document.querySelector("title").textContent == "Remove | Recipe App") {
+		populateSelect(recipes);
+	}
+
+});
+
 function darkMode() {
 	const isDark = sessionStorage.getItem("darkModeState") === "1";
 
@@ -12,7 +31,7 @@ function darkMode() {
 
 function template(img, name) {
 	return  `
-		<div class="box">
+		<div class="box" onClick="">
 			<div class="top">
 				<img src="${img}" alt="${name}">
 			</div>
@@ -21,9 +40,9 @@ function template(img, name) {
 	`;
 }
 
+
 function showRecipes(recipes, container = document.querySelector(".content")) {
 	container.innerHTML = "";
-
 	recipes.forEach(recipe => {
 		const img = recipe.img || "assets/default-image.jpg";
 		const name = recipe.name || "Unnamed Recipe";
@@ -31,3 +50,18 @@ function showRecipes(recipes, container = document.querySelector(".content")) {
 	});
 }
 
+function option(name) {
+	return `
+		<option>${name}</option>
+	`;
+}
+
+function populateSelect(recipes) {
+	const removeList = document.querySelector("select");
+	let name;
+
+	for (recipe in recipes) {
+		name = recipe.name;
+		removeList.appendChild(option(name));
+	}
+}
