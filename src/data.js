@@ -1,3 +1,7 @@
+const API_BASE = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1";
+const BUCKET_NAME = "recipe-picture-bucket";
+
+
 document.addEventListener('DOMContentLoaded', () => {
 
 
@@ -52,14 +56,17 @@ function template(img, name) {
 	`;
 }
 
-
 function showRecipes(recipes, container = document.querySelector(".content")) {
 	container.innerHTML = "";
-	for (recipe in recipes) {
+
+	for (const recipe of recipes) {
 		const img = recipe.img || "assets/default-image.jpg";
 		const name = recipe.name || "Unnamed Recipe";
+
+		console.log(`Rendering: ${name}, Image: ${img}`);
+
 		container.insertAdjacentHTML("beforeend", template(img, name));
-	};
+	}
 }
 
 function option(name) {
@@ -160,22 +167,71 @@ async function fetchRecipeImages(recipeID) {
 }
 
 async function loadAndShowRecipes() {
-  const endpoint =
-    "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_title_cards";
+	try {
+		const response = await fetch(`${API_BASE}/data/get_title_cards`);
+		if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
+
+		const rawRows = await response.json();
+
+		const recipes = rawRows.map(row => {
+			try {
+				const parsed = JSON.parse(row[0]); 
+				const name = parsed.name || "Unnamed";
+				const keys = parsed.keys || [];
+				const img = keys.length
+					? `https://${BUCKET_NAME}.s3.amazonaws.com/${keys[0].key}`
+					: "assets/default-image.jpg";
+
+				return { name, img };
+			} catch (err) {
+				console.warn("Failed to parse recipe row:", row);
+				return null;
+			}
+		}).filter(Boolean);
+
+		console.log("Final recipe list:", recipes);
+
+		showRecipes(recipes);
+	} catch (err) {
+		console.error("loadAndShowRecipes failed:", err);
+	}
+}
+
+async function searchRecipesByName(query) {
+  if (!query) return [];
 
   try {
-    const res = await fetch(endpoint);
-    if (!res.ok) throw new Error("Failed to fetch recipes");
-    const recipes = await res.json();
+    const response = await fetch(`${API_BASE}/data/get_title_cards`);
+    if (!response.ok) throw new Error(`API error: ${response.status}`);
 
-    
-    for (const recipe of recipes) {
-      const images = await fetchRecipeImages(recipe.recipeID);
-      recipe.img = images.length > 0 ? images[0] : "assets/default-image.jpg";
-    }
+    const rawData = await response.json();
+	console.log("Raw data:", rawData);
 
-    showRecipes(recipes);
+    const parsedData = rawData.map(row => {
+      try {
+        return JSON.parse(row[0]);
+      } catch {
+        return null;
+      }
+    }).filter(Boolean);
+
+    const filtered = parsedData.filter(recipe =>
+      recipe.name && recipe.name.toLowerCase().includes(query.toLowerCase())
+    );
+
+    return filtered.map(recipe => {
+      const keys = recipe.keys || [];
+      const img = keys.length
+        ? `https://${BUCKET_NAME}.s3.amazonaws.com/${keys[0].key}`
+        : "assets/default-image.jpg";
+
+      return {
+        name: recipe.name,
+        img
+      };
+    });
   } catch (err) {
-    console.error("Error loading recipes:", err);
+    console.error("searchRecipesByName failed:", err);
+    return [];
   }
 }
