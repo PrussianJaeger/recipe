@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Search Page ========================================================================================================================
-	document.querySelector("title").textContent == "Search | Recipe App") {
+	if (document.querySelector("title").textContent == "Search | Recipe App") {
 		const searchBtn = document.getElementById("searchSubmit");
 		const searchInput = document.getElementById("searchInput");
 		const resultsContainer = document.getElementById("searchResults");
