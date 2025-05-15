@@ -40,16 +40,14 @@ function template(img, name) {
 	`;
 }
 
-function showRecipes(recipes) {
-	const content = document.querySelector("#recipes");
-	let img, name;
 
-	for (recipe in recipes) {
-		img = recipe.img;
-		name = recipe.name;
-
-		content.appendChild(template(img, name));
-	}
+function showRecipes(recipes, container = document.querySelector(".content")) {
+	container.innerHTML = "";
+	recipes.forEach(recipe => {
+		const img = recipe.img || "assets/default-image.jpg";
+		const name = recipe.name || "Unnamed Recipe";
+		container.insertAdjacentHTML("beforeend", template(img, name));
+	});
 }
 
 function option(name) {

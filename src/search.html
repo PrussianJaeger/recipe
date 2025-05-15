@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="reset.css" />
+	<link rel="stylesheet" href="styles.css" />
+	<script src="data.js" defer></script>
+	<title>Search Recipes</title>
+</head>
+<body>
+<section class="root">
+
+	<header>
+		<h1>Search Recipes</h1>
+		<button onclick="window.location.href='index.html'">Back</button>
+	</header>
+
+	<main>
+		<div class="actions">
+			<input type="text" id="searchInput" placeholder="Search by name..." />
+			<button id="searchSubmit">Search</button>
+		</div>
+		<section class="content" id="searchResults">
+			<!-- results go here -->
+		</section>
+	</main>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+	const searchBtn = document.getElementById("searchSubmit");
+	const searchInput = document.getElementById("searchInput");
+	const resultsContainer = document.getElementById("searchResults");
+
+	searchBtn.addEventListener("click", () => {
+		const query = searchInput.value.trim().toLowerCase();
+
+		if (!query) return;
+
+		fetch("https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1")
+			.then(res => res.json())
+			.then(data => {
+				const filtered = data.filter(recipe =>
+					recipe.name && recipe.name.toLowerCase().includes(query)
+				);
+				showRecipes(filtered, resultsContainer);
+			})
+			.catch(err => {
+				console.error("Search failed:", err);
+			});
+	    });
+    });
+</script>
+</body>
+</html>
