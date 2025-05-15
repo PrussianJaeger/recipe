@@ -1,5 +1,13 @@
 function darkMode() {
-	document.querySelector("body").classList.toggle("dark-mode");
+	const isDark = sessionStorage.getItem("darkModeState") === "1";
+
+	if (!isDark) {
+		sessionStorage.setItem("darkModeState", "1");
+		document.querySelector("body").classList.add("dark-mode");
+	} else {
+		sessionStorage.setItem("darkModeState", "0");
+		document.querySelector("body").classList.remove("dark-mode");
+	}
 }
 
 function template(img, name) {
