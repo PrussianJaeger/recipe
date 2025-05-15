@@ -26,8 +26,39 @@
 		<section class="content" id="searchResults">
 			<!-- results go here -->
 		</section>
-	</main>
+		<button id="homePage" onClick="window.location.href='index.html'">< Back</button>
 
+	</main>
+	
 </section>
+
+<script>
+	document.addEventListener("DOMContentLoaded", applyDarkMode);
+    document.addEventListener("DOMContentLoaded", () => {
+  	const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_title_cards";
+  	const searchBtn = document.getElementById("searchSubmit");
+  	const searchInput = document.getElementById("searchInput");
+  	const resultsContainer = document.getElementById("searchResults");
+
+  	searchBtn.addEventListener("click", async () => {
+    	const query = searchInput.value.trim().toLowerCase();
+    	if (!query) return;
+
+    	try {
+      		const response = await fetch(endpoint);
+      		if (!response.ok) throw new Error(`API error: ${response.status}`);
+
+      		const data = await response.json();
+      		const filtered = data.filter(recipe =>
+        		recipe.name && recipe.name.toLowerCase().includes(query)
+      		);
+
+      		showRecipes(filtered, resultsContainer);
+    		} catch (err) {
+      		console.error("Search failed:", err);
+    		}
+  		});
+	});
+</script>
 </body>
 </html>
