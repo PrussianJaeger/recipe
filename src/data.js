@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// Home Page
 	if (document.querySelector("title").textContent == "Home | Recipe App") {
-		const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1";
+		const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_all_data";
 		fetch(endpoint)
 			.then(response => {
 				if (!response.ok) throw new Error("Network response was not ok");
@@ -25,7 +25,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// Remove Page
 	if (document.querySelector("title").textContent == "Remove | Recipe App") {
-		populateSelect(recipes);
+		const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_all_data";
+		fetch(endpoint)
+			.then(response => {
+				if (!response.ok) throw new Error("Network response was not ok");
+				return response.json();
+			})
+			.then(data => {
+				populateSelect(data);
+			})
+			.catch(error => {
+				console.error("Error fetching recipes:", error);
+			});
 	}
 
 	// Search Page
@@ -71,7 +82,7 @@ function template(img, name) {
 	return  `
 		<div class="box" onClick="">
 			<div class="top">
-				<img src="${img}" alt="${name}">
+				<img src="${img}" alt="image of ${name}">
 			</div>
 			<div class="bot">${name}</div>
 		</div>
@@ -81,26 +92,32 @@ function template(img, name) {
 function showRecipes(recipes, container = document.querySelector(".content")) {
 	container.innerHTML = "";
 	recipes.forEach(recipe => {
+		recipe = JSON.parse(recipe);
+
+// ============> TODO: GET IMAGES WORKING <=================================================================================================
 		const img = recipe.img || "assets/default-image.jpg";
+
 		const name = recipe.name || "Unnamed Recipe";
 		container.insertAdjacentHTML("beforeend", template(img, name));
 	});
 }
 
-function option(name) {
+function option(name, recipeId) {
 	return `
-		<option>${name}</option>
+		<option value="${recipeId}">${name}</option>
 	`;
 }
 
-function populateSelect(recipes) {
-	const removeList = document.querySelector("select");
-	let name;
+function populateSelect(recipes, container = document.querySelector("#remove-recipe")) {
+	container.innerHTML = "";
+	recipes.forEach(recipe => {
+		recipe = JSON.parse(recipe);
+		console.log(recipe);
+		const name = recipe.name || "Unnamed Recipe";
+		const recipeId = recipe.recipeID;
+		container.insertAdjacentHTML("beforeend", option(name, recipeId));
+	});
 
-	for (recipe in recipes) {
-		name = recipe.name;
-		removeList.appendChild(option(name));
-	}
 }
 
 
