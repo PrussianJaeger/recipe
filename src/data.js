@@ -17,15 +17,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-function darkMode() {
-	const isDark = sessionStorage.getItem("darkModeState") === "1";
+document.addEventListener("DOMContentLoaded", () => {
+	applyDarkMode();
 
-	if (!isDark) {
-		sessionStorage.setItem("darkModeState", "1");
-		document.querySelector("body").classList.add("dark-mode");
-	} else {
-		sessionStorage.setItem("darkModeState", "0");
-		document.querySelector("body").classList.remove("dark-mode");
+	const darkModeBtn = document.getElementById("darkModeButton");
+	if (darkModeBtn) {
+		darkModeBtn.addEventListener("click", darkMode);
+	}
+})
+
+function darkMode() {
+	const isDark = localStorage.getItem("darkModeState") === "1";
+	const body = document.querySelector("body");
+
+	localStorage.setItem("darkModeState", isDark ? "0" : "1");
+	body.classList.toggle("dark-mode", !isDark);
+}
+
+function applyDarkMode() {
+	const isDark = localStorage.getItem("darkModeState") === "1";
+	if (isDark) {
+		document.body.classList.add("dark-mode");
 	}
 }
 
@@ -40,14 +52,8 @@ function template(img, name) {
 	`;
 }
 
-<<<<<<< HEAD
 function showRecipes(recipes, container = document.querySelector(".content")) {
 	container.innerHTML = "";
-=======
-function showRecipes(recipes) {
-	const content = document.querySelector("#recipes");
-	let img, name;
->>>>>>> 3b637392cce6a1c30d9b272b7da3432772ba1e3b
 
 	recipes.forEach(recipe => {
 		const img = recipe.img || "assets/default-image.jpg";
@@ -56,8 +62,6 @@ function showRecipes(recipes) {
 	});
 }
 
-<<<<<<< HEAD
-=======
 function option(name) {
 	return `
 		<option>${name}</option>
@@ -73,4 +77,3 @@ function populateSelect(recipes) {
 		removeList.appendChild(option(name));
 	}
 }
->>>>>>> 3b637392cce6a1c30d9b272b7da3432772ba1e3b
