@@ -52,9 +52,15 @@ function template(img, name) {
 	`;
 }
 
+<<<<<<< HEAD
 function showRecipes(recipes, container = document.querySelector(".content")) {
 	container.innerHTML = "";
 
+=======
+
+function showRecipes(recipes, container = document.querySelector(".content")) {
+	container.innerHTML = "";
+>>>>>>> fedb0cbc3fafacf78cd975afc756308c44f090fd
 	recipes.forEach(recipe => {
 		const img = recipe.img || "assets/default-image.jpg";
 		const name = recipe.name || "Unnamed Recipe";
