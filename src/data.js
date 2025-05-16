@@ -169,6 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Remove Page ========================================================================================================================
 	if (document.querySelector("title").textContent == "Remove | Recipe App") {
 		const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_all_data";
+
 		fetch(endpoint)
 			.then(response => {
 				if (!response.ok) throw new Error("Network response was not ok");
@@ -180,7 +181,40 @@ document.addEventListener("DOMContentLoaded", () => {
 			.catch(error => {
 				console.error("Error fetching recipes:", error);
 			});
+
+	
+		document.getElementById("deleteRecipeBtn").addEventListener("click", async () => {
+			const select = document.getElementById("remove-recipe");
+			const recipeID = select.value;
+			const status = document.getElementById("deleteStatus");
+
+			if (!recipeID) {
+				status.textContent = "Please select a recipe.";
+				status.style.color = "red";
+				return;
+			}
+
+			if (!confirm("Are you sure you want to delete this recipe and its images?")) return;
+
+			status.textContent = "Deleting...";
+			status.style.color = "black";
+
+			try {
+				await deleteRecipe(recipeID);
+				status.textContent = "Recipe deleted successfully.";
+				status.style.color = "green";
+
+			
+				const response = await fetch(endpoint);
+				const updatedData = await response.json();
+				populateSelect(updatedData);
+			} catch (err) {
+				status.textContent = `Delete failed: ${err.message}`;
+				status.style.color = "red";
+			}
+		});
 	}
+
 
 
 // Search Page ========================================================================================================================
@@ -378,5 +412,43 @@ async function searchRecipesByName(query) {
   } catch (err) {
     console.error("searchRecipesByName failed:", err);
     return [];
+  }
+}
+
+async function deleteRecipe(recipeID) {
+
+  try {
+    let response = await fetch(`${API_BASE}/image/delete_image`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ recipeID }),
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(`Image delete failed: ${err.error || response.statusText}`);
+    }
+    const imageDeleteResult = await response.json();
+    console.log("Image delete response:", imageDeleteResult);
+
+    
+    response = await fetch(`${API_BASE}/data/delete_data`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ recipeID }),
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(`Data delete failed: ${err.error || response.statusText}`);
+    }
+    const dataDeleteResult = await response.json();
+    console.log("Data delete response:", dataDeleteResult);
+
+    alert("Recipe and associated images deleted successfully.");
+
+  } catch (error) {
+    console.error("Deletion error:", error);
+    alert(`Error deleting recipe: ${error.message}`);
   }
 }
