@@ -1,8 +1,9 @@
 const API_BASE = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1";
 const S3_BASE = "https://recipe-picture-bucket.s3.us-east-1.amazonaws.com";
+const BUCKET_NAME = "recipe-picture-bucket";
 /*
 const API_BASE = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1";
-const BUCKET_NAME = "recipe-picture-bucket";
+
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -243,23 +244,10 @@ function showRecipes(recipes, container = document.querySelector(".content")) {
 	container.innerHTML = "";
 
 	recipes.forEach(recipe => {
-		recipe = JSON.parse(recipe);
-
-// ============> TODO: GET IMAGES WORKING <=================================================================================================
-		// const img = recipe.img || "assets/default-image.jpg";
-
-		// 🔁 Fallback to local placeholder if image fails to load
-		const img = isValidKey ? `${S3_BASE}/${s3Key}` : "https://via.placeholder.com/150"; // "assets/default-image.jpg"
-		img.onerror = () => {
-			img.onerror = null;
-			img.src = "placeholder.jpg";  // or use "assets/placeholder.jpg" if it's in a folder
-		};
-// =========================================================================================================================================
-
 		const name = recipe.name || "Unnamed Recipe";
+		const img = recipe.img || "assets/default-image.jpg";
 
 		console.log(`Rendering: ${name}, Image: ${img}`);
-
 		container.insertAdjacentHTML("beforeend", template(img, name));
 	});
 }
