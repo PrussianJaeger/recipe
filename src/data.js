@@ -1,8 +1,9 @@
 const API_BASE = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1";
 const S3_BASE = "https://recipe-picture-bucket.s3.us-east-1.amazonaws.com";
+const BUCKET_NAME = "recipe-picture-bucket";
 /*
 const API_BASE = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1";
-const BUCKET_NAME = "recipe-picture-bucket";
+
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -184,30 +185,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Search Page ========================================================================================================================
 	if (document.querySelector("title").textContent == "Search | Recipe App") {
-		const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_title_cards";
-		const searchBtn = document.getElementById("searchSubmit");
-		const searchInput = document.getElementById("searchInput");
-		const resultsContainer = document.getElementById("searchResults");
+  		const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_title_cards";
+  		const searchBtn = document.getElementById("searchSubmit");
+  		const searchInput = document.getElementById("searchInput");
+  		const resultsContainer = document.getElementById("searchResults");
 
-		searchBtn.addEventListener("click", async () => {
-			const query = searchInput.value.trim().toLowerCase();
-			if (!query) return;
+  		searchBtn.addEventListener("click", async () => {
+    		const query = searchInput.value.trim().toLowerCase();
+    		if (!query) return;
 
-			try {
-				const response = await fetch(endpoint);
-				if (!response.ok) throw new Error(`API error: ${response.status}`);
+    	try {
+      		const response = await fetch(endpoint);
+      		if (!response.ok) throw new Error(`API error: ${response.status}`);
 
-				const data = await response.json();
-				const filtered = data.filter(recipe =>
-					recipe.name && recipe.name.toLowerCase().includes(query)
-				);
+      	const data = await response.json();
 
-				showRecipes(filtered, resultsContainer);
-			} catch (err) {
-				console.error("Search failed:", err);
-			}
-		});
-	}
+
+      	const parsed = data.map(row => {
+        	try {
+          		return JSON.parse(row[0]);
+        	} catch {
+          		return null;
+        	}
+      	}).filter(Boolean);
+
+      
+      	const filtered = parsed.filter(recipe =>
+        	recipe.name && recipe.name.toLowerCase().includes(query)
+      	);
+
+      
+      	const results = filtered.map(recipe => {
+        	const keys = recipe.keys || [];
+        	const img = keys.length
+          		? `https://${BUCKET_NAME}.s3.amazonaws.com/${keys[0].key}`
+          		: "assets/default-image.jpg";
+
+        	return { name: recipe.name, img };
+      	});
+
+      	showRecipes(results, resultsContainer);
+    	} catch (err) {
+      		console.error("Search failed:", err);
+    	}
+  	});
+}
 
 });
 
@@ -243,23 +265,10 @@ function showRecipes(recipes, container = document.querySelector(".content")) {
 	container.innerHTML = "";
 
 	recipes.forEach(recipe => {
-		recipe = JSON.parse(recipe);
-
-// ============> TODO: GET IMAGES WORKING <=================================================================================================
-		// const img = recipe.img || "assets/default-image.jpg";
-
-		// 🔁 Fallback to local placeholder if image fails to load
-		const img = isValidKey ? `${S3_BASE}/${s3Key}` : "https://via.placeholder.com/150"; // "assets/default-image.jpg"
-		img.onerror = () => {
-			img.onerror = null;
-			img.src = "placeholder.jpg";  // or use "assets/placeholder.jpg" if it's in a folder
-		};
-// =========================================================================================================================================
-
 		const name = recipe.name || "Unnamed Recipe";
+		const img = recipe.img || "assets/default-image.jpg";
 
 		console.log(`Rendering: ${name}, Image: ${img}`);
-
 		container.insertAdjacentHTML("beforeend", template(img, name));
 	});
 }
