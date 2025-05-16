@@ -185,30 +185,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Search Page ========================================================================================================================
 	if (document.querySelector("title").textContent == "Search | Recipe App") {
-		const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_title_cards";
-		const searchBtn = document.getElementById("searchSubmit");
-		const searchInput = document.getElementById("searchInput");
-		const resultsContainer = document.getElementById("searchResults");
+  		const endpoint = "https://sik7nmmji9.execute-api.us-east-1.amazonaws.com/stage1/data/get_title_cards";
+  		const searchBtn = document.getElementById("searchSubmit");
+  		const searchInput = document.getElementById("searchInput");
+  		const resultsContainer = document.getElementById("searchResults");
 
-		searchBtn.addEventListener("click", async () => {
-			const query = searchInput.value.trim().toLowerCase();
-			if (!query) return;
+  		searchBtn.addEventListener("click", async () => {
+    		const query = searchInput.value.trim().toLowerCase();
+    		if (!query) return;
 
-			try {
-				const response = await fetch(endpoint);
-				if (!response.ok) throw new Error(`API error: ${response.status}`);
+    	try {
+      		const response = await fetch(endpoint);
+      		if (!response.ok) throw new Error(`API error: ${response.status}`);
 
-				const data = await response.json();
-				const filtered = data.filter(recipe =>
-					recipe.name && recipe.name.toLowerCase().includes(query)
-				);
+      	const data = await response.json();
 
-				showRecipes(filtered, resultsContainer);
-			} catch (err) {
-				console.error("Search failed:", err);
-			}
-		});
-	}
+
+      	const parsed = data.map(row => {
+        	try {
+          		return JSON.parse(row[0]);
+        	} catch {
+          		return null;
+        	}
+      	}).filter(Boolean);
+
+      
+      	const filtered = parsed.filter(recipe =>
+        	recipe.name && recipe.name.toLowerCase().includes(query)
+      	);
+
+      
+      	const results = filtered.map(recipe => {
+        	const keys = recipe.keys || [];
+        	const img = keys.length
+          		? `https://${BUCKET_NAME}.s3.amazonaws.com/${keys[0].key}`
+          		: "assets/default-image.jpg";
+
+        	return { name: recipe.name, img };
+      	});
+
+      	showRecipes(results, resultsContainer);
+    	} catch (err) {
+      		console.error("Search failed:", err);
+    	}
+  	});
+}
 
 });
 
